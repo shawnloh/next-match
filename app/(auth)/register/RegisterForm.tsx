@@ -4,18 +4,28 @@ import {GiPadlock} from "react-icons/gi";
 import {Input} from "@heroui/input";
 import {Button} from "@heroui/button";
 import {useForm} from "react-hook-form";
-
-import {zodResolver} from "@hookform/resolvers/zod";
-import {registerSchema, RegisterSchema} from "@/app/lib/schemas/register-schema";
+import {RegisterSchema} from "@/app/lib/schemas/register-schema";
+import {registerUser} from "@/app/actions/auth-actions";
 
 export default function RegisterForm() {
-    const {register, handleSubmit, formState: {errors, isValid},} = useForm<RegisterSchema>({
-        resolver: zodResolver(registerSchema),
+    const {register, handleSubmit, setError, formState: {errors, isValid, isSubmitting},} = useForm<RegisterSchema>({
+        // resolver: zodResolver(registerSchema),
         mode: 'onTouched'
     })
 
-    const onSubmit = (data: RegisterSchema) => {
-        console.log(data)
+    const onSubmit = async (data: RegisterSchema) => {
+        const result = await registerUser(data);
+        if (result.status === 'success') {
+            console.log("user registered")
+        } else {
+            if (Array.isArray(result.error)) {
+                result.error.forEach((error) => {
+                    setError(error.path.join('.'), {message: error.message})
+                })
+            } else {
+                setError('root.serverError', {message: result.error})
+            }
+        }
     }
 
     return (
@@ -41,7 +51,11 @@ export default function RegisterForm() {
                                type='password' {...register('password')}
                                isInvalid={!!errors.password}
                                errorMessage={errors.password?.message}/>
-                        <Button isDisabled={!isValid} fullWidth color='secondary' type='submit'>Login</Button>
+                        {errors.root?.serverError && (
+                            <p className='text-danger text-sm'>{errors.root?.serverError.message}</p>
+                        )}
+                        <Button isLoading={isSubmitting} isDisabled={!isValid} fullWidth color='secondary'
+                                type='submit'>Register</Button>
                     </div>
                 </form>
             </CardBody>
