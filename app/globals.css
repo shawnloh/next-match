@@ -10,3 +10,9 @@
     --font-sans: "font", sans-serif;
     --font-mono: "monospace", monospace;
 }
+
+@layer components {
+    .vertical-center {
+        height: calc(100vh - 64px);
+    }
+}
