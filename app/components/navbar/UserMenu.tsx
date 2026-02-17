@@ -3,12 +3,19 @@ import {Session} from "next-auth";
 import {Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger} from "@heroui/react";
 import Link from "next/link";
 import {signOutUser} from "@/app/actions/auth-actions";
+import {redirect} from "next/navigation";
 
 type Props = {
     user: Session['user']
 }
 
 export function UserMenu({user}: Props) {
+
+    const handleSignOut = async () => {
+        await signOutUser();
+        redirect('/')
+    };
+
     return (
         <Dropdown placement='bottom-end'>
             <DropdownTrigger>
@@ -32,9 +39,7 @@ export function UserMenu({user}: Props) {
                 <DropdownItem as={Link} href='/members/edit' key='edit-profile'>
                     Edit Profile
                 </DropdownItem>
-                <DropdownItem color='danger' onPress={async () => {
-                    await signOutUser()
-                }} key='sign-out'>
+                <DropdownItem color='danger' onPress={handleSignOut} key='sign-out'>
                     Log out
                 </DropdownItem>
             </DropdownMenu>
