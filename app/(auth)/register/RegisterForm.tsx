@@ -4,12 +4,13 @@ import {GiPadlock} from "react-icons/gi";
 import {Input} from "@heroui/input";
 import {Button} from "@heroui/button";
 import {useForm} from "react-hook-form";
-import {RegisterSchema} from "@/app/lib/schemas/register-schema";
+import {registerSchema, RegisterSchema} from "@/app/lib/schemas/register-schema";
 import {registerUser} from "@/app/actions/auth-actions";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 export default function RegisterForm() {
     const {register, handleSubmit, setError, formState: {errors, isValid, isSubmitting},} = useForm<RegisterSchema>({
-        // resolver: zodResolver(registerSchema),
+        resolver: zodResolver(registerSchema),
         mode: 'onTouched'
     })
 
