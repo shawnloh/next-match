@@ -6,17 +6,27 @@ import {Button} from "@heroui/button";
 import {useForm} from "react-hook-form";
 import {loginSchema, LoginSchema} from "@/app/lib/schemas/login-schema";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {signInUser} from "@/app/actions/auth-actions";
+import {useRouter} from "next/navigation";
+import {toast} from "react-toastify";
 
 export default function LoginForm() {
-    const {register, handleSubmit, formState: {errors, isValid},} = useForm<LoginSchema>({
+    const router = useRouter()
+    const {register, handleSubmit, formState: {errors, isValid, isSubmitting}} = useForm<LoginSchema>({
         resolver: zodResolver(loginSchema),
         mode: 'onTouched'
     })
 
-    const onSubmit = (data: LoginSchema) => {
-        console.log(data)
+    const onSubmit = async (data: LoginSchema) => {
+        const result = await signInUser(data)
+        if (result.status === 'success') {
+            router.push('/members')
+        } else {
+            console.log(result.error)
+            toast(result.error)
+        }
     }
-    
+
     return (
         <Card className='w-2/5 mx-auto'>
             <CardHeader className='flex flex-col items-center justify-center'>
@@ -38,7 +48,8 @@ export default function LoginForm() {
                                type='password' {...register('password')}
                                isInvalid={!!errors.password}
                                errorMessage={errors.password?.message as string}/>
-                        <Button isDisabled={!isValid} fullWidth color='secondary' type='submit'>Login</Button>
+                        <Button isDisabled={!isValid} isLoading={isSubmitting} fullWidth color='secondary'
+                                type='submit'>Login</Button>
                     </div>
                 </form>
             </CardBody>
