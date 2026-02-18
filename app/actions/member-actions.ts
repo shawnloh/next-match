@@ -20,3 +20,15 @@ export async function getMembers() {
         console.log(e)
     }
 }
+
+export async function getMemberByUserId(userId: string) {
+    try {
+        return prisma.member.findUnique({
+            where: {
+                userId
+            }
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
