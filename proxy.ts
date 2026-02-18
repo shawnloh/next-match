@@ -4,12 +4,10 @@ import {auth} from "@/app/auth";
 
 export async function proxy(request: NextRequest) {
     const {nextUrl} = request
-    console.log("proxy", request.url);
     const session = await auth()
 
     const isPublic = publicRoutes.includes(nextUrl.pathname)
     const isAuthenticationRoute = authenticationRoutes.includes(nextUrl.pathname)
-    console.log("came here")
     if (isPublic) {
         return NextResponse.next()
     }
