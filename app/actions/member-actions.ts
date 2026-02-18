@@ -32,3 +32,11 @@ export async function getMemberByUserId(userId: string) {
         console.log(e)
     }
 }
+
+export async function getMemberPhotosByUserId(userId: string) {
+    const member = await prisma.member.findUnique({where: {userId}, select: {photos: true}})
+    if (!member) {
+        return null
+    }
+    return member.photos
+}
