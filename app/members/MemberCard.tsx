@@ -4,16 +4,22 @@ import {Card, CardFooter} from "@heroui/card";
 import {Image} from "@heroui/image";
 import Link from "next/link";
 import {calculateAge} from "@/app/lib/utils";
+import LikeButton from "@/app/components/LikeButton";
 
 type Props = {
     member: Member
+    likeIds: string[]
 }
 
-export default function MemberCard({member}: Props) {
+export default function MemberCard({member, likeIds}: Props) {
+    const hasLiked = likeIds.includes(member.userId)
     return (
         <Card fullWidth as={Link} href={`/members/${member.userId}`} className="member-card" isPressable>
             <Image isZoomed alt={member.name} width={300} src={member.image || '/images/user.png'}
                    className='aspect-square object-cover'/>
+            <div className='absolute top-3 right-3 z-50'>
+                <LikeButton targetUserId={member.userId} hasLiked={hasLiked}/>
+            </div>
             <CardFooter
                 className='flex justify-start overflow-hidden absolute bottom-0 z-10 dark-gradient'
             >
