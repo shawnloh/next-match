@@ -1,19 +1,16 @@
 'use client';
-import {Session} from "next-auth";
 import {Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger} from "@heroui/react";
 import Link from "next/link";
 import {signOutUser} from "@/app/actions/auth-actions";
-import {redirect} from "next/navigation";
 
 type Props = {
-    user: Session['user']
+    userInfo: { name: string | null, image: string | null } | null
 }
 
-export function UserMenu({user}: Props) {
-
+export function UserMenu({userInfo}: Props) {
+    console.log("========", userInfo)
     const handleSignOut = async () => {
         await signOutUser();
-        redirect('/')
     };
 
     return (
@@ -24,16 +21,16 @@ export function UserMenu({user}: Props) {
                     as='button'
                     className='transition-transform'
                     color='secondary'
-                    name={user?.name || 'user avatar'}
+                    name={userInfo?.name || 'user avatar'}
                     size='sm'
-                    src={user?.image || '/images/user.png'}
+                    src={userInfo?.image || '/images/user.png'}
                 />
             </DropdownTrigger>
             <DropdownMenu variant='flat' aria-label='User actions menu'>
                 <DropdownSection showDivider>
                     <DropdownItem isReadOnly as='span' className='h-14 flex flex-row' aria-label='username'
                                   key='username'>
-                        Signed in as {user?.name}
+                        Signed in as {userInfo?.name}
                     </DropdownItem>
                 </DropdownSection>
                 <DropdownItem as={Link} href='/members/edit' key='edit-profile'>
