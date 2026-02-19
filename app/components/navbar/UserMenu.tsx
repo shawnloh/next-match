@@ -9,7 +9,6 @@ type Props = {
 }
 
 export function UserMenu({userInfo}: Props) {
-    console.log("========", userInfo)
     const handleSignOut = async () => {
         await signOutUser();
     };
