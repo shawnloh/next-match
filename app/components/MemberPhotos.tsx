@@ -6,7 +6,7 @@ import {DeleteButton} from "@/app/components/DeleteButton";
 import {Photo} from "@/generated/prisma/client";
 import {useRouter} from "next/navigation";
 import {useState} from "react";
-import {setMainImage} from "@/app/actions/user-actions";
+import {deleteImage, setMainImage} from "@/app/actions/user-actions";
 
 type Props = {
     photos?: Photo[] | null
@@ -17,10 +17,19 @@ type Props = {
 export function MemberPhotos({photos, editing, mainImageUrl}: Props) {
     const router = useRouter()
     const [loading, setLoading] = useState({type: '', isLoading: false, id: ''})
+
     const onSetMain = async (photo: Photo) => {
         if (photo.url === mainImageUrl) return null
         setLoading({type: 'main', isLoading: true, id: photo.id})
         await setMainImage(photo)
+        router.refresh()
+        setLoading({type: '', isLoading: false, id: photo.id})
+    }
+
+    const onDelete = async (photo: Photo) => {
+        if (photo.url === mainImageUrl) return null
+        setLoading({type: 'delete', isLoading: true, id: photo.id})
+        await deleteImage(photo)
         router.refresh()
         setLoading({type: '', isLoading: false, id: photo.id})
     }
@@ -36,8 +45,9 @@ export function MemberPhotos({photos, editing, mainImageUrl}: Props) {
                                 <StarButton selected={photo.url === mainImageUrl}
                                             loading={loading.isLoading && loading.type === 'main' && loading.id === photo.id}/>
                             </div>
-                            <div className='absolute top-3 right-3 z-50'>
-                                <DeleteButton loading={false}/>
+                            <div onClick={() => onDelete(photo)} className='absolute top-3 right-3 z-50'>
+                                <DeleteButton
+                                    loading={loading.isLoading && loading.type === 'delete' && loading.id === photo.id}/>
                             </div>
                         </>
                     )}
