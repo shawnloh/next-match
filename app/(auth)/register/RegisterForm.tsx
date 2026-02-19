@@ -7,6 +7,7 @@ import {useForm} from "react-hook-form";
 import {registerSchema, RegisterSchema} from "@/app/lib/schemas/register-schema";
 import {registerUser} from "@/app/actions/auth-actions";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {handleFormServerError} from "@/app/lib/utils";
 
 export default function RegisterForm() {
     const {register, handleSubmit, setError, formState: {errors, isValid, isSubmitting},} = useForm<RegisterSchema>({
@@ -19,13 +20,7 @@ export default function RegisterForm() {
         if (result.status === 'success') {
             console.log("user registered")
         } else {
-            if (Array.isArray(result.error)) {
-                result.error.forEach((error) => {
-                    setError(error.path.join('.'), {message: error.message})
-                })
-            } else {
-                setError('root.serverError', {message: result.error})
-            }
+            handleFormServerError(result, setError)
         }
     }
 
