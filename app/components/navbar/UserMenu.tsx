@@ -2,6 +2,7 @@
 import {Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger} from "@heroui/react";
 import Link from "next/link";
 import {signOutUser} from "@/app/actions/auth-actions";
+import {transformImageUrl} from "@/app/lib/utils";
 
 type Props = {
     userInfo: { name: string | null, image: string | null } | null
@@ -23,7 +24,7 @@ export function UserMenu({userInfo}: Props) {
                     color='secondary'
                     name={userInfo?.name || 'user avatar'}
                     size='sm'
-                    src={userInfo?.image || '/images/user.png'}
+                    src={transformImageUrl(userInfo?.image) || '/images/user.png'}
                 />
             </DropdownTrigger>
             <DropdownMenu variant='flat' aria-label='User actions menu'>

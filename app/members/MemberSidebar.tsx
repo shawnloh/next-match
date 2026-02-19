@@ -2,7 +2,7 @@
 import {Member} from "@/generated/prisma/client";
 import {Card, CardBody, CardFooter} from "@heroui/card";
 import {Image} from "@heroui/image";
-import {calculateAge} from "@/app/lib/utils";
+import {calculateAge, transformImageUrl} from "@/app/lib/utils";
 import {Divider} from "@heroui/react";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
@@ -18,7 +18,8 @@ export default function MemberSidebar({member, navLinks}: Props) {
 
     return (
         <Card className='w-full mt-10 items-center h-[80vh]'>
-            <Image height={200} width={200} src={member.image || '/images/user.png'} alt={member.name}
+            <Image height={200} width={200} src={transformImageUrl(member.image) || '/images/user.png'}
+                   alt={member.name}
                    className='rounded-full mt-6 aspect-square object-cover'/>
             <CardBody>
                 <div className='flex flex-col items-center'>
