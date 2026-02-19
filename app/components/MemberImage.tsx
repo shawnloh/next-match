@@ -14,7 +14,7 @@ export default function MemberImage({photo}: Props) {
         <div>
             {photo?.publicId ? (
                 <CldImage alt='image of member' src={photo.publicId} width={300} height={300} crop='fill' gravity='face'
-                          className='rounded-2xl'/>
+                          className='rounded-2xl' preload/>
             ) : (
                 <div className='relative'>
                     <Image width={220} src={photo?.url || '/images/user.png'} className='object-cover aspect-square'
