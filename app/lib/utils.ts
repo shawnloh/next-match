@@ -1,4 +1,4 @@
-import {differenceInYears} from "date-fns";
+import {differenceInYears, format} from "date-fns";
 import {FieldValues, Path, UseFormSetError} from "react-hook-form";
 import {ZodIssue} from "zod/v3";
 
@@ -32,4 +32,8 @@ export function transformImageUrl(imageUrl: string | null | undefined) {
     const uploadIndex = imageUrl.indexOf('/upload/') + '/upload/'.length;
     const transformation = 'c_fill,w_300,h_300,g_faces';
     return `${imageUrl.slice(0, uploadIndex)}${transformation}/${imageUrl.slice(uploadIndex)}`;
+}
+
+export function formatShortDate(date: Date): string {
+    return format(date, 'dd MMM yy h:mm:a');
 }
