@@ -48,11 +48,13 @@ export async function getMessageThread(recipientUserId: string) {
                 OR: [
                     {
                         senderId: userId,
-                        recipientId: recipientUserId
+                        recipientId: recipientUserId,
+                        senderDeleted: false
                     },
                     {
                         senderId: recipientUserId,
-                        recipientId: userId
+                        recipientId: userId,
+                        recipientDeleted: false
                     }
                 ]
             },
@@ -80,7 +82,94 @@ export async function getMessageThread(recipientUserId: string) {
                 }
             }
         })
+        if (messages.length > 0) {
+            await prisma.message.updateMany({
+                where: {
+                    senderId: recipientUserId,
+                    recipientId: userId,
+                    dateRead: null
+                },
+                data: {
+                    dateRead: new Date()
+                }
+            })
+        }
         return messages.map(message => mapMessageToMessageDto(message))
+    } catch (e) {
+        console.log(e)
+        throw e
+    }
+}
+
+export async function getMessageByContainer(container: string) {
+    try {
+        const userId = await getAuthUserId()
+        const conditions = {
+            [container === 'outbox' ? 'senderId' : 'recipientId']: userId,
+            ...(container === 'outbox' ? {senderDeleted: false} : {recipientDeleted: false})
+        }
+        const messages = await prisma.message.findMany({
+            where: conditions,
+            orderBy: {
+                created: 'desc'
+            },
+            select: {
+                id: true,
+                text: true,
+                created: true,
+                dateRead: true,
+                sender: {
+                    select: {
+                        userId: true,
+                        name: true,
+                        image: true
+                    }
+                },
+                recipient: {
+                    select: {
+                        userId: true,
+                        name: true,
+                        image: true
+                    }
+                }
+            }
+        })
+        return messages.map(message => mapMessageToMessageDto(message))
+    } catch (e) {
+        console.log(e)
+        throw e
+    }
+}
+
+export async function deleteMessage(messageId: string, isOutbox: boolean) {
+    try {
+        const selector = isOutbox ? 'senderDeleted' : 'recipientDeleted'
+        const userId = await getAuthUserId()
+        await prisma.message.update({
+            where: {
+                id: messageId
+            },
+            data: {
+                [selector]: {set: true}
+            }
+        })
+
+        return prisma.message.deleteMany({
+            where: {
+                OR: [
+                    {
+                        senderId: userId,
+                        senderDeleted: true,
+                        recipientDeleted: true
+                    },
+                    {
+                        recipientId: userId,
+                        senderDeleted: true,
+                        recipientDeleted: true
+                    }
+                ]
+            }
+        })
     } catch (e) {
         console.log(e)
         throw e

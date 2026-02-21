@@ -37,3 +37,10 @@ export function transformImageUrl(imageUrl: string | null | undefined) {
 export function formatShortDate(date: Date): string {
     return format(date, 'dd MMM yy h:mm:a');
 }
+
+export function truncateText(text: string | null | undefined, maxLength: number = 50) {
+    if (!text || text.length <= maxLength) {
+        return text;
+    }
+    return text.slice(0, maxLength) + '...';
+}
